@@ -17,6 +17,8 @@ compose
 ```
 
 ## .env example
+Example .env file
+```
 TZ=Europe/Amsterdam
 PUID=1000
 PGID=100
@@ -25,3 +27,4 @@ PGID=100
 CODE_SERVER_HOMEASSISTANT_URL=http://192.168.178.100:8123
 CODE_SERVER_HOMEASSISTANT_TOKEN=a-pat-from-has
 CODE_SERVER_PASSWORD=password-for-code-server-to-be-replaced-by-authentic
+```
