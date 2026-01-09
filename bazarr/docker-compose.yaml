@@ -1,0 +1,31 @@
+services:
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - bazarr:/config
+      - /mnt/prime-ds/movies:/movies
+      - /mnt/prime-ds/series:/series
+    ports:
+      - 6767:6767
+    restart: unless-stopped
+
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.bazarr-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.bazarr-https-redirect.redirectscheme.permanent=true"
+      - "traefik.http.routers.bazarr.rule=Host('bazarr.tcit.nl')"
+      - "traefik.http.routers.bazarr.entrypoints=websecure"
+      - "traefik.http.routers.bazarr.tls=true"
+      - "traefik.http.routers.bazarr.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.bazarr-http.rule=Host('bazarr.tcit.nl')"
+      - "traefik.http.routers.bazarr-http.entrypoints=web"
+      - "traefik.http.routers.bazarr-http.middlewares=bazarr-https-redirect"
+      - "traefik.http.routers.bazarr.middlewares=hsts-global"
+      - "traefik.http.services.bazarr.loadbalancer.server.port=6767"

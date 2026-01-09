@@ -1,0 +1,40 @@
+services:
+  speedtest-tracker:
+    image: lscr.io/linuxserver/speedtest-tracker:latest
+    restart: unless-stopped
+    container_name: speedtest-tracker
+    ports:
+      - 8033:80
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - APP_KEY=base64:wwIpGhvmcHUGiyTZ8Q/E4G2t39Z0hrrlqDDiYO7pkyQ=
+      - DB_CONNECTION=mariadb
+      - DB_HOST=192.168.178.100
+      - DB_PORT=3306
+      - DB_DATABASE=speedtest_tracker
+      - DB_USERNAME=speedtest_tracker
+      - DB_PASSWORD=zCSVlgAbkfR3ONSu
+      - APP_TIMEZONE=${TZ}
+      - SPEEDTEST_SCHEDULE=*/30 * * * *
+    volumes:
+      - speedtest/config:/config
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.speedtest-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.speedtest-https-redirect.redirectscheme.permanent=true"
+      - "traefik.http.routers.speedtest.rule=Host('speedtest.tcit.nl')"
+      - "traefik.http.routers.speedtest.entrypoints=websecure"
+      - "traefik.http.routers.speedtest.tls=true"
+      - "traefik.http.routers.speedtest.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.speedtest-http.rule=Host('speedtest.tcit.nl')"
+      - "traefik.http.routers.speedtest-http.entrypoints=web"
+      - "traefik.http.routers.speedtest-http.middlewares=speedtest-https-redirect"
+      - "traefik.http.routers.speedtest.middlewares=hsts-global"
+      - "traefik.http.services.speedtest.loadbalancer.server.port=8033"
+
+volumes:
+  speedtest:
+    external: true
