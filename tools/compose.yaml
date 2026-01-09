@@ -1,0 +1,9 @@
+name: it-tools
+
+services:
+  it-tools:
+    container_name: it-tools
+    image: ghcr.io/corentinth/it-tools:latest
+    ports:
+      - 8888:80
+    restart: unless-stopped
