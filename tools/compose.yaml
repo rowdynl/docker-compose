@@ -1,9 +1,29 @@
-name: it-tools
+name: tools
 
 services:
-  it-tools:
+  godns:
+    container_name: godns
+    image: timothyye/godns:latest
+    environment:
+      - CONFIG=/config/config.json
+    restart: unless-stopped
+    ports:
+      - 9099:9099
+    volumes:
+      - godns:/config/
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.godns.rule=Host('godns.tcit.nl')"
+      - "traefik.http.routers.godns.entrypoints=websecure"
+      - "traefik.http.routers.godns.tls.certresolver=transip"
+  
+  it-tools: # https://github.com/CorentinTh/it-tools
     container_name: it-tools
     image: ghcr.io/corentinth/it-tools:latest
     ports:
       - 8888:80
     restart: unless-stopped
+
+volumes:
+  godns:
+    external: true
